@@ -18,7 +18,7 @@ function App() {
     <div className="App">
       <form onSubmit={e => handleSubmit(e)}>
         <label>
-          Question: 
+          Question:
           <input type="text" value={question} onChange={e => setQuestion(e.target.value)} />
         </label>
         <input type="submit" value="Save" />

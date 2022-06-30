@@ -9,4 +9,13 @@
     <div id="root"></div>
     <script type="module" src="./main.tsx"></script>
   </body>
+  <script>
+    window.onmessage = async (event) => {
+      if (event.data.pluginMessage.type === 'answer') {
+        var message = event.data.pluginMessage
+        console.log("todo:" + message.question)
+        window.parent.postMessage({ pluginMessage: { type: 'result', result: true } }, '*')
+      }
+    }
+  </script>
 </html>

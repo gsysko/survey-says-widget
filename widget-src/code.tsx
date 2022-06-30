@@ -17,6 +17,7 @@ function Widget() {
       console.log(e.propertyName)
       waitForTask(new Promise(resolve => {
         figma.showUI(__html__, { visible: true, width: 400, height: 100 })
+        figma.ui.postMessage({ type: "question", message: question})
         figma.ui.onmessage = async (msg) => {
           if (msg.question) {
             setQuestion(msg.question)
@@ -28,6 +29,19 @@ function Widget() {
     },
   )
 
+  async function record(checked: boolean) {
+    console.log("record: " + checked)
+    waitForTask(new Promise(resolve => {
+      figma.showUI(__html__, { visible: false })
+      figma.ui.postMessage({ type: "answer", question: question, checked: checked})
+      figma.ui.onmessage = async (msg) => {
+        if (msg.result) {
+          resolve(null)
+        }
+      }
+    }))
+  }
+
   return (
     <Frame
       name="Checkbox"
@@ -35,7 +49,8 @@ function Widget() {
       overflow="visible"
       width={16}
       height={20}
-      onClick={()=>{
+      onClick={async ()=>{
+        await record(!checked)
         setChecked(!checked)
       }}
     >

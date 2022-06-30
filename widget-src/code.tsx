@@ -1,8 +1,9 @@
 const { widget } = figma;
-const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text, useSyncedState, usePropertyMenu} = widget;
+const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text, useSyncedState, usePropertyMenu, useWidgetId, waitForTask} = widget;
 
 function Widget() {
   const[checked, setChecked] = useSyncedState("checked", false)
+  const[question, setQuestion] = useSyncedState("question", "Yes or no?")
 
   usePropertyMenu(
     [
@@ -14,6 +15,16 @@ function Widget() {
     ],
     (e) => {
       console.log(e.propertyName)
+      waitForTask(new Promise(resolve => {
+        figma.showUI(__html__, { visible: true, width: 400, height: 100 })
+        figma.ui.onmessage = async (msg) => {
+          if (msg.question) {
+            setQuestion(msg.question)
+            // Resolve the task since we are done!
+            resolve(null)
+          }
+        }
+      }))
     },
   )
 
@@ -24,7 +35,9 @@ function Widget() {
       overflow="visible"
       width={16}
       height={20}
-      onClick={()=>{setChecked(!checked)}}
+      onClick={()=>{
+        setChecked(!checked)
+      }}
     >
       <Rectangle
         hidden={!checked}

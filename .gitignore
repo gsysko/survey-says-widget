@@ -1,0 +1,11 @@
+# node
+node_modules
+npm-debug.log
+package-lock.json
+
+# webpack
+dist/
+.env
+
+# mac
+.DS_Store

@@ -1,8 +1,22 @@
 const { widget } = figma;
-const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text, useSyncedState} = widget;
+const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text, useSyncedState, usePropertyMenu} = widget;
 
 function Widget() {
   const[checked, setChecked] = useSyncedState("checked", false)
+
+  usePropertyMenu(
+    [
+      {
+        tooltip: 'Edit',
+        propertyName: 'edit',
+        itemType: 'action',
+      },
+    ],
+    (e) => {
+      console.log(e.propertyName)
+    },
+  )
+
   return (
     <Frame
       name="Checkbox"

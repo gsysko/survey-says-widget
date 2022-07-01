@@ -4,9 +4,6 @@ const { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text, useSyncedState,
 function Widget() {
   const[checked, setChecked] = useSyncedState("checked", false)
   const[question, setQuestion] = useSyncedState("question", "Yes or no?")
-  const [showName, setShowName] = useSyncedState<boolean>('showName', true)
-  const [name, setName] = useSyncedState<string>('name', "")
-  const [photoUrl, setPhotoUrl] = useSyncedState<string | null>('photoUrl', null)
 
   usePropertyMenu(
     [
@@ -33,10 +30,10 @@ function Widget() {
   )
 
 
-  async function record(checked: boolean) {
+  async function record(checked: boolean, username: string) {
     console.log("record: " + checked)
 
-    let answerData = {question: question, checked: checked}
+    let answerData = {question: question, checked: checked, username: username}
 
     waitForTask(new Promise(resolve => {
       figma.showUI(__html__, { visible: false })
@@ -60,7 +57,7 @@ function Widget() {
       width={16}
       height={20}
       onClick={async () => {
-        await record(!checked);
+        await record(!checked,figma.currentUser!.name);
         setChecked(!checked);
       } }
     >

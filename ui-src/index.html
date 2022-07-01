@@ -10,12 +10,83 @@
     <script type="module" src="./main.tsx"></script>
   </body>
   <script>
+    // API credentials
+    var apiSecret = "<YOUR KEY HERE>"
+    var apiURL = "<YOUR URL HERE>"
+
     window.onmessage = async (event) => {
       if (event.data.pluginMessage.type === 'answer') {
-        var message = event.data.pluginMessage
-        console.log("todo:" + message.question)
-        window.parent.postMessage({ pluginMessage: { type: 'result', result: true } }, '*')
+        var answerData = event.data.pluginMessage.answerData
+
+        if (apiSecret != "<YOUR KEY HERE>") {
+        		//make xml http request
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', apiURL, true);
+            xhr.setRequestHeader("Access-Control-Allow-Credentials", true);
+            xhr.setRequestHeader("content-type", "application/json");
+            xhr.setRequestHeader("secret-key", apiSecret);
+            xhr.setRequestHeader("versioning", false);
+            xhr.responseType = 'text';
+            xhr.onload = () => {
+              if (xhr.status >= 200 && xhr.status < 300) {
+
+                //populate latest data from API
+                jsonBinData = JSON.parse(xhr.response);
+
+                //Make sure this starts as an array
+                if(!Array.isArray(jsonBinData))Array.of(jsonBinData)
+
+                //TODO: Check that the array does not already contain a match (Same question, same user ID, possibly different answer)
+                //TODO: If it does, update the match, else...
+                //Add the answer to the array.
+                jsonBinData.push(JSON.parse(answerData))
+
+                //connected
+                connectedToBin = true;
+
+                //make xml http request
+                let xhr2 = new XMLHttpRequest();
+                xhr2.open('PUT', apiURL, true);
+                xhr2.setRequestHeader("Access-Control-Allow-Credentials", true);
+                xhr2.setRequestHeader("content-type", "application/json");
+                xhr2.setRequestHeader("secret-key", apiSecret);
+                xhr2.setRequestHeader("versioning", false);
+                xhr2.responseType = 'text';
+                xhr2.onload = () => {
+                  if (xhr2.status >= 200 && xhr2.status < 300) {
+
+                    //populate latest data from API
+                    // jsonBinData = JSON.parse(answerData);
+
+                    parent.postMessage({ pluginMessage: { type: 'result', result: true } }, '*');
+                  } else {
+
+                    nope()
+                  }
+                }
+                xhr2.send(JSON.stringify(jsonBinData));
+
+              } else {
+                nope()
+
+                connectedToBin = false;
+              }
+            }
+            xhr.send();
+          } else {
+            nope();
+          }
       }
+    }
+
+    function nope() {
+      //send msg to plugin
+      parent.postMessage({pluginMessage: {
+                      'type': 'notify',
+                      'msg': 'There was an problem connecting!'
+                    }}, '*');
+
+      parent.postMessage({ pluginMessage: { type: 'result', result: false } }, '*');
     }
   </script>
 </html>

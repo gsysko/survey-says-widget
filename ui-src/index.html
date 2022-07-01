@@ -19,6 +19,7 @@
         var answerData = event.data.pluginMessage.answerData
 
         if (apiSecret != "<YOUR KEY HERE>") {
+            debugger
         		//make xml http request
             let xhr = new XMLHttpRequest();
             xhr.open('GET', apiURL, true);

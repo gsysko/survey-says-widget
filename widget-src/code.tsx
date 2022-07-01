@@ -29,10 +29,10 @@ function Widget() {
     },
   )
 
-  async function record(checked: boolean) {
+  async function record(checked: boolean, fileID: string|undefined) {
     console.log("record: " + checked)
 
-    let answerData = {question: question, checked: checked}
+    let answerData = {question: question, checked: checked, fileID: fileID}
 
     waitForTask(new Promise(resolve => {
       figma.showUI(__html__, { visible: false })
@@ -55,7 +55,8 @@ function Widget() {
       width={16}
       height={20}
       onClick={async ()=>{
-        await record(!checked)
+        //TODO need to upate fileKey -> fileURL (or ID?)
+        await record(!checked, figma.fileKey)
         setChecked(!checked)
       }}
     >

@@ -35,11 +35,16 @@ function Widget() {
 
   async function record(checked: boolean) {
     console.log("record: " + checked)
+
+    let answerData = {question: question, checked: checked}
+
     waitForTask(new Promise(resolve => {
       figma.showUI(__html__, { visible: false })
-      figma.ui.postMessage({ type: "answer", question: question, checked: checked})
+      figma.ui.postMessage({ type: "answer", answerData: JSON.stringify(answerData)})
       figma.ui.onmessage = async (msg) => {
-        if (msg.result) {
+        if (msg.type == 'notify'){
+          figma.notify(msg.msg, {timeout: 4000})
+        } else if (msg.type == "result") {
           resolve(null)
         }
       }

@@ -35,12 +35,21 @@
                 jsonBinData = JSON.parse(xhr.response);
 
                 //Make sure this starts as an array
-                if(!Array.isArray(jsonBinData))Array.of(jsonBinData)
+                if(!Array.isArray(jsonBinData)) jsonBinData = Array.of(jsonBinData)
 
-                //TODO: Check that the array does not already contain a match (Same question, same user ID, possibly different answer)
-                //TODO: If it does, update the match, else...
-                //Add the answer to the array.
-                jsonBinData.push(JSON.parse(answerData))
+                //Check that the array does not already contain a match (Same question, same user ID, possibly different answer)
+                let newAnswer = JSON.parse(answerData)
+                let unique = true
+                jsonBinData.forEach(element => {
+                  //If it does contain a match, update the match...
+                  if (element.question == newAnswer.question && element.username == newAnswer.username ) {
+                    element.checked = newAnswer.checked
+                    unique = false
+                  }
+                });
+
+                //else...
+                if (unique) jsonBinData.push(newAnswer)
 
                 //connected
                 connectedToBin = true;
@@ -55,13 +64,8 @@
                 xhr2.responseType = 'text';
                 xhr2.onload = () => {
                   if (xhr2.status >= 200 && xhr2.status < 300) {
-
-                    //populate latest data from API
-                    // jsonBinData = JSON.parse(answerData);
-
                     parent.postMessage({ pluginMessage: { type: 'result', result: true } }, '*');
                   } else {
-
                     nope()
                   }
                 }
